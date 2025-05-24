@@ -1,0 +1,33 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Xcode
+      run: sudo xcode-select -s /Applications/Xcode_15.0.app
+
+    - name: Build the app
+      run: |
+        xcodebuild clean build \
+          -project Demo-iOS.xcodeproj \
+          -scheme Demo-iOS \
+          -destination 'platform=iOS Simulator,name=iPhone 14' \
+          CODE_SIGNING_ALLOWED=NO
+
+    - name: Run tests
+      run: |
+        xcodebuild test-without-building \
+          -project Demo-iOS.xcodeproj \
+          -scheme Demo-iOS \
+          -destination 'platform=iOS Simulator,name=iPhone 14'
